@@ -1,0 +1,29 @@
+name: test-worklfow
+
+env: {}
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Run all unit tests.
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the pull request's source code.
+      - name: Check out source code
+        uses: actions/checkout@v2
+      - name: Setup node.js env
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+          check-latest: true
+      - name: Install and Test 🔧
+        run: |
+          npm install
+          npm run test:ci
