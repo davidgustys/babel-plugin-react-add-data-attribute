@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unknown plugin Arrow Function Component: Arrow Function Component 1`] = `
+
+const Div2 = () => <div />
+
+const DivBody = () => {
+  return <div />
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const Div2 = () => <div data-test="__fixtures___arrowFunction_div" />
+
+const DivBody = () => {
+  return <div data-test="__fixtures___arrowFunction_div" />
+}
+
+
+`;
+
+exports[`unknown plugin Functional Component: Functional Component 1`] = `
+
+function Div() {
+  return <div />
+}
+
+function Nested() {
+  return (
+    <div>
+      hello
+      <div>world</div>
+    </div>
+  )
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+function Div() {
+  return <div data-test="__fixtures___functionComponent_div" />
+}
+
+function Nested() {
+  return (
+    <div data-test="__fixtures___functionComponent_div">
+      hello
+      <div data-test="__fixtures___functionComponent_div">world</div>
+    </div>
+  )
+}
+
+
+`;
