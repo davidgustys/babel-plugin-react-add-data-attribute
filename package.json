@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-add-data-attribute",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "babel plugin to add data-test attribute to react components",
   "license": "MIT",
   "repository": "davidgustys/babel-plugin-react-add-data-attribute",
