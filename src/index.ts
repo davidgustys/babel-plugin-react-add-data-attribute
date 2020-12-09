@@ -1,76 +1,123 @@
-import babel, { PluginObj } from '@babel/core'
-import { JSXIdentifier, File } from 'babel-types'
+import babel, { NodePath, PluginObj } from '@babel/core'
+import * as t from 'babel-types'
 
-interface PluginOptions {
+interface IPluginOptions {
   propertyName?: string
   dirLevel?: number
   filename?: string
 }
 
-export default ({
-  types: t,
-}: typeof babel): PluginObj<{
-  opts?: Partial<PluginOptions>
+type FunctionType =
+  | t.FunctionDeclaration
+  | t.FunctionExpression
+  | t.ArrowFunctionExpression
+
+function nameForReactComponent(
+  path: NodePath<FunctionType>
+): t.Identifier | null {
+  const { parentPath } = path
+
+  if (!t.isArrowFunctionExpression(path.node) && t.isIdentifier(path.node.id)) {
+    return path.node.id
+  }
+  if (t.isVariableDeclarator(parentPath)) {
+    // @ts-ignore
+    return parentPath.node.id
+  }
+
+  return null
+}
+
+interface IState {
+  opts?: Partial<IPluginOptions>
   filename: string
-  file: File
-}> => ({
-  name: 'react-data-testid',
-  visitor: {
-    Program(programPath, state) {
-      const propertyName = state.opts?.propertyName
-        ? state.opts.propertyName
-        : 'data-test'
-      const dirLevel = state.opts?.dirLevel ? state.opts.dirLevel : 1
+  file: t.File
+}
 
-      const slashChar = '/'
-      const splits = state.filename.split(slashChar)
-      if (!splits || !splits.length) {
-        console.error(
-          'babel-plugin-add-react-test-attribute plugin error: File path is not valid.'
+export default function plugin({
+  types: t,
+}: typeof babel): PluginObj<IState> {
+  return {
+    name: 'babel-plugin-react-add-data-attribute',
+    visitor: {
+      Function(programPath, state) {
+        const propertyName = state.opts?.propertyName
+          ? state.opts.propertyName
+          : 'data-test'
+        const dirLevel = state.opts?.dirLevel ? state.opts.dirLevel : 1
+
+        const identifier = nameForReactComponent(
+          (programPath as unknown) as NodePath<FunctionType>
         )
-        return
-      }
+        if (!identifier) {
+          return
+        }
 
-      const dirNames = splits.slice(-1 - dirLevel, -1)
+        const slashChar = '/'
+        const splits = state.filename.split(slashChar)
+        if (!splits || !splits.length) {
+          console.error(
+            'babel-plugin-add-react-test-attribute plugin error: File path is not valid.'
+          )
+          return
+        }
 
-      const fileName = splits[splits.length - 1].split('.')[0]
-      const fileIdentifier = `${dirNames.join('_')}_${fileName}`
+        const dirNames = splits.slice(-1 - dirLevel, -1)
 
-      programPath.traverse({
-        JSXElement(jsxPath) {
-          let nodeName = ''
-          let dataIDDefined = false
+        const fileName = splits[splits.length - 1].split('.')[0]
+        const fileIdentifier = `${dirNames.join('_')}_${fileName}_${identifier.name
+          }`
 
-          // Traverse once to get the element node name (div, Header, span, etc)
-          jsxPath.traverse({
-            JSXOpeningElement(openingPath) {
-              openingPath.stop() // Do not visit child nodes again
-              const identifierNode: JSXIdentifier = (openingPath.get('name')
-                .node as unknown) as JSXIdentifier
+        const prevLiterals: { [key: string]: number } = {}
+        programPath.traverse({
+          JSXElement(jsxPath) {
+            let nodeName = ''
+            let dataIDDefined = false
 
-              nodeName = identifierNode.name
-              openingPath.traverse({
-                JSXAttribute(attributePath) {
-                  // If the data attribute doesn't exist, then we append the data attribute
-                  const attributeName = attributePath.get('name').node.name
-                  if (!dataIDDefined) {
-                    dataIDDefined = attributeName === propertyName
-                  }
-                },
-              })
-            },
-          })
+            // Traverse once to get the element node name (div, Header, span, etc)
+            jsxPath.traverse({
+              JSXOpeningElement(openingPath) {
+                openingPath.stop() // Do not visit child nodes again
+                const identifierNode: t.JSXIdentifier = (openingPath.get('name')
+                  .node as unknown) as t.JSXIdentifier
 
-          if (!dataIDDefined && nodeName && nodeName !== 'Fragment') {
-            jsxPath.node.openingElement.attributes.push(
-              t.jsxAttribute(
-                t.jsxIdentifier(propertyName),
-                t.stringLiteral(`${fileIdentifier}_${nodeName}`)
+                nodeName = identifierNode.name
+                openingPath.traverse({
+                  JSXAttribute(attributePath) {
+                    // If the data attribute doesn't exist, then we append the data attribute
+                    const attributeName = attributePath.get('name').node.name
+                    if (!dataIDDefined) {
+                      dataIDDefined = attributeName === propertyName
+                    }
+                  },
+                })
+              },
+            })
+
+            if (!dataIDDefined && nodeName && nodeName !== 'Fragment') {
+              if (
+                typeof prevLiterals[`${fileIdentifier}_${nodeName}`] ===
+                'undefined'
+              ) {
+                prevLiterals[`${fileIdentifier}_${nodeName}`] = 0
+              } else {
+                prevLiterals[`${fileIdentifier}_${nodeName}`] += 1
+              }
+              const siblingIter = prevLiterals[`${fileIdentifier}_${nodeName}`]
+
+              jsxPath.node.openingElement.attributes.push(
+                t.jsxAttribute(
+                  t.jsxIdentifier(propertyName),
+                  t.stringLiteral(
+                    `${fileIdentifier}_${nodeName}${siblingIter > 0 ? '_' + siblingIter : ''
+                    }`
+                  )
+                )
               )
-            )
-          }
-        },
-      })
+            }
+          },
+        })
+      },
     },
-  },
-})
+  }
+}

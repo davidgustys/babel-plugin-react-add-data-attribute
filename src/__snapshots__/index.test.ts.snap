@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`unknown plugin Arrow Function Component: Arrow Function Component 1`] = `
+exports[`babel-plugin-react-add-data-attribute Arrow Function Component: Arrow Function Component 1`] = `
 
 const Div2 = () => <div />
 
@@ -10,16 +10,16 @@ const DivBody = () => {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-const Div2 = () => <div data-test="__fixtures___arrowFunction_div" />
+const Div2 = () => <div data-test="__fixtures___arrowFunction_Div2_div" />
 
 const DivBody = () => {
-  return <div data-test="__fixtures___arrowFunction_div" />
+  return <div data-test="__fixtures___arrowFunction_DivBody_div" />
 }
 
 
 `;
 
-exports[`unknown plugin Functional Component: Functional Component 1`] = `
+exports[`babel-plugin-react-add-data-attribute Functional Component: Functional Component 1`] = `
 
 function Div() {
   return <div />
@@ -37,14 +37,84 @@ function Nested() {
       ↓ ↓ ↓ ↓ ↓ ↓
 
 function Div() {
-  return <div data-test="__fixtures___functionComponent_div" />
+  return <div data-test="__fixtures___functionComponent_Div_div" />
 }
 
 function Nested() {
   return (
-    <div data-test="__fixtures___functionComponent_div">
+    <div data-test="__fixtures___functionComponent_Nested_div">
       hello
-      <div data-test="__fixtures___functionComponent_div">world</div>
+      <div data-test="__fixtures___functionComponent_Nested_div_1">world</div>
+    </div>
+  )
+}
+
+
+`;
+
+exports[`babel-plugin-react-add-data-attribute Property exists: Property exists 1`] = `
+
+function Sibling() {
+  return <div />
+}
+
+function Siblings() {
+  return (
+    <div>
+      hello
+      <Sibling data-test="i-exist"/>
+      <Sibling/>
+    </div>
+  )
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+function Sibling() {
+  return <div data-test="__fixtures___propertyExists_Sibling_div" />
+}
+
+function Siblings() {
+  return (
+    <div data-test="__fixtures___propertyExists_Siblings_div">
+      hello
+      <Sibling data-test="i-exist" />
+      <Sibling data-test="__fixtures___propertyExists_Siblings_Sibling" />
+    </div>
+  )
+}
+
+
+`;
+
+exports[`babel-plugin-react-add-data-attribute Same Siblings: Same Siblings 1`] = `
+
+function Sibling() {
+  return <div />
+}
+
+function Siblings() {
+  return (
+    <div>
+      hello
+      <Sibling/>
+      <Sibling/>
+    </div>
+  )
+}
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+function Sibling() {
+  return <div data-test="__fixtures___sameSiblings_Sibling_div" />
+}
+
+function Siblings() {
+  return (
+    <div data-test="__fixtures___sameSiblings_Siblings_div">
+      hello
+      <Sibling data-test="__fixtures___sameSiblings_Siblings_Sibling" />
+      <Sibling data-test="__fixtures___sameSiblings_Siblings_Sibling_1" />
     </div>
   )
 }
