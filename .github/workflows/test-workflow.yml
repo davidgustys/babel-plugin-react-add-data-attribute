@@ -23,7 +23,13 @@ jobs:
         with:
           node-version: '12'
           check-latest: true
+<<<<<<< HEAD
       - name: Install and Test 🔧
         run: |
           npm install
           npm run test:ci
+=======
+      - run: |
+          npm install
+          npm test:ci
+>>>>>>> Switch to github actions for testing
