@@ -6,6 +6,7 @@ pluginTester({
   plugin,
   babelOptions: { parserOpts: { plugins: ['jsx'] } },
   snapshot: true,
+  pluginName: 'babel-plugin-react-add-data-attribute',
   tests: [
     {
       title: 'Functional Component',
@@ -14,6 +15,15 @@ pluginTester({
     {
       title: 'Arrow Function Component',
       fixture: path.join(__dirname, '__fixtures__', 'arrowFunction.tsx'),
+    },
+
+    {
+      title: 'Property exists',
+      fixture: path.join(__dirname, '__fixtures__', 'propertyExists.tsx'),
+    },
+    {
+      title: 'Same Siblings',
+      fixture: path.join(__dirname, '__fixtures__', 'sameSiblings.tsx'),
     },
   ],
 })

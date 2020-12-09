@@ -3,7 +3,10 @@
   "version": "1.1.0",
   "description": "babel plugin to add data-test attribute to react components",
   "license": "MIT",
-  "repository": "davidgustys/babel-plugin-react-add-data-attribute",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidgustys/babel-plugin-react-add-data-attribute.git"
+  },
   "author": "David Gustys <hello@davidgustys.com> (https://davidgustys.com)",
   "files": [
     "dest"
@@ -59,5 +62,9 @@
     "prettier": "^2.2.1",
     "ts-jest": "^26.4.4",
     "typescript": "^4.1.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/davidgustys/babel-plugin-react-add-data-attribute/issues"
+  },
+  "homepage": "https://github.com/davidgustys/babel-plugin-react-add-data-attribute#readme"
 }
